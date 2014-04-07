@@ -1,0 +1,22 @@
+{
+  "name": "node-styx",
+  "version": "0.0.1",
+  "description": "Styx pack/unpack for node.js",
+  "keywords": "styx 9p plan9 fs server",
+  "main": "server.js",
+  "scripts": {
+    "test": "cake test"
+  },
+  "author": "kabbi",
+  "license": "MIT (http://opensource.org/licenses/MIT)",
+  "dependencies": {
+    "coffee-script": "~1.6.3",
+    "winston": "~0.7.2",
+    "dissolve": "~0.3.2",
+    "concentrate": "~0.2.2"
+  },
+  "devDependencies": {
+    "mocha": "~1.15.1",
+    "chai": "~1.8.1"
+  }
+}
