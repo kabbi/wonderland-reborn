@@ -66,8 +66,8 @@ module.exports =
             @uint32le("fid").uint32le("newFid").uint16le("numberOfEntries").tap ->
                 @loop("pathEntries", (end) ->
                     @string16("path")
-                    @vars.numberOfEntries--
-                    do end unless @vars.numberOfEntries
+                    if @vars.pathEntries.length is @vars.numberOfEntries - 1
+                        do end
                 ).tap ->
                     @vars.pathEntries = @vars.pathEntries.map (item) -> item.path
                     delete @vars.numberOfEntries

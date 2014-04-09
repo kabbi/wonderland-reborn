@@ -19,7 +19,8 @@ StyxEncoder::encode = (message) ->
     result
 
 StyxEncoder::uint64le = (number) ->
-	@uint32le(number & 0xFFFFFFFF).uint32le((number >> 32) & 0xFFFFFFFF)
+    # TODO: IMPORTANT: can we have 64bit ints?
+    @uint32le(number & 0xFFFFFFFF).uint32le(0)
 
 StyxEncoder::string16 = (str) ->
     @uint16le(str.length).buffer(new Buffer str, "utf8")
