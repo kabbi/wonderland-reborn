@@ -29,9 +29,23 @@ StyxParser::string16 = (name) ->
             this.vars[name] = this.vars[name].toString "utf8"
 
 StyxParser::qid = (name) ->
-    @uint64le("path").uint32le("version").uint32le("qidType")
+    @tap name, ->
+        @uint8("type")
+        .uint32le("version")
+        .uint64le("path")
 
 StyxParser::dir = (name) ->
-    @string16("name").string16("uid").string16("gid").string16("lastModifierUid")
-    .qid("qid").uint32("permissions").uint32("lastAccessTime").uint32("lastModificationTime")
-    .uint64("length").uint32("serverType").uint32("serverSubType")
+    @uint16le("stat_len").uint16le("stat_len").tap ->
+        delete @vars.stat_len
+        @uint16le("reservedType")
+        .uint32le("reservedDev")
+        .qid("qid")
+        .uint32le("mode")
+        .uint32le("lastAccessTime")
+        .uint32le("lastModificationTime")
+        .uint64le("length")
+        .string16("name")
+        .string16("ownerName")
+        .string16("groupName")
+        .string16("lastModifierName")
+

@@ -174,7 +174,8 @@ module.exports =
         decode: (finish) ->
             @uint32le("fid").dir("stat").tap finish
         encode: (msg) ->
-            @result()
+            buffer = (new @constructor()).dir(msg).result()
+            @uint32le(msg.fid).int16le(buffer.length).buffer(buffer).result()
     127:
         name: 'Rwstat'
         decode: (finish) ->

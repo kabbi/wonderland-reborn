@@ -23,8 +23,26 @@ StyxEncoder::uint64le = (number) ->
     @uint32le(number & 0xFFFFFFFF).uint32le(0)
 
 StyxEncoder::string16 = (str) ->
-    @uint16le(str.length).buffer(new Buffer str, "utf8")
+    @uint16le(str.length)
+    .buffer(new Buffer str, "utf8")
 
 StyxEncoder::qid = (qid) ->
-    @uint64le(qid.path).uint32le(qid.version).uint32le(qid.qidType)
+    @uint8(qid.type)
+    .uint32le(qid.version)
+    .uint64le(qid.path)
 
+StyxEncoder::dir = (dir) ->
+    buffer = new StyxEncoder()
+        .uint16le(dir.reservedType)
+        .uint32le(dir.reservedDev)
+        .qid(dir.qid)
+        .uint32le(dir.mode)
+        .uint32le(dir.lastAccessTime)
+        .uint32le(dir.lastModificationTime)
+        .uint64le(dir.length)
+        .string16(dir.name)
+        .string16(dir.ownerName)
+        .string16(dir.groupName)
+        .string16(dir.lastModifierName)
+        .result()
+    @uint16le(buffer.length).buffer(buffer)
