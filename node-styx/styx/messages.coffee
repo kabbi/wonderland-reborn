@@ -126,7 +126,7 @@ module.exports =
                 delete @vars.count
                 finish.call @
         encode: (msg) ->
-            @result()
+            @uint32le(msg.fid).uint64le(msg.offset).uint32le(msg.data.length).buffer(msg.data).result()
     119:
         name: 'Rwrite'
         decode: (finish) ->

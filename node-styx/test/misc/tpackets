@@ -1,0 +1,15 @@
+# Input file for styxchat program
+# used as the reference styx msg generator
+Tversion 8192 9P2000
+Tauth 42 kabbi authname
+Tflush 100
+Tattach 10 20 zubr authname
+Twalk 100 200 some long path here follows
+Topen 10 20
+Tcreate 242 someName 002 10
+Tread 10 10000 20000
+Twrite 10 10000 'huge data here'
+Tclunk 999
+Tremove 222
+Tstat 3
+Twstat 9 hggggg uss gii 34 4545 990

@@ -62,6 +62,14 @@ module.exports = [
         offset: 10000
         count: 20000
 ,
+    encoded: new Buffer "250000007608000a00000010270000000000000e0000006875676520646174612068657265", "hex"
+    decoded:
+        type: "Twrite"
+        tag: 8
+        fid: 10
+        offset: 10000,
+        data: new Buffer "huge data here", "utf8"
+,
     encoded: new Buffer "0b000000780100e7030000", "hex"
     decoded:
         type: "Tclunk"
