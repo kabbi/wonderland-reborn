@@ -133,9 +133,13 @@ module.exports =
     113:
         name: 'Ropen'
         decode: (finish) ->
-            finish()
+            @qid("qid")
+            .uint32le("ioUnit")
+            .tap finish
         encode: (msg) ->
-            @result()
+            @qid(msg.qid)
+            .uint32le(msg.ioUnit)
+            .result()
     114:
         name: 'Tcreate'
         decode: (finish) ->
@@ -153,9 +157,13 @@ module.exports =
     115:
         name: 'Rcreate'
         decode: (finish) ->
-            finish()
+            @qid("qid")
+            .uint32le("ioUnit")
+            .tap finish
         encode: (msg) ->
-            @result()
+            @qid(msg.qid)
+            .uint32le(msg.ioUnit)
+            .result()
     116:
         name: 'Tread'
         decode: (finish) ->
@@ -171,9 +179,15 @@ module.exports =
     117:
         name: 'Rread'
         decode: (finish) ->
-            finish()
+            @uint32le("count")
+            .buffer("data", "count")
+            .tap ->
+                delete @vars.count
+                finish.call @
         encode: (msg) ->
-            @result()
+            @uint32le(msg.data.length)
+            .buffer(msg.data)
+            .result()
     118:
         name: 'Twrite'
         decode: (finish) ->
@@ -193,9 +207,11 @@ module.exports =
     119:
         name: 'Rwrite'
         decode: (finish) ->
-            finish()
+            @uint32le("count")
+            .tap finish
         encode: (msg) ->
-            @result()
+            @uint32le("count")
+            .result()
     120:
         name: 'Tclunk'
         decode: (finish) ->
@@ -235,9 +251,13 @@ module.exports =
     125:
         name: 'Rstat'
         decode: (finish) ->
-            finish()
+            @dir("stat")
+            .tap finish
         encode: (msg) ->
-            @result()
+            buffer = (new @constructor()).dir(msg).result()
+            @int16le(buffer.length)
+            .buffer(buffer)
+            .result()
     126:
         name: 'Twstat'
         decode: (finish) ->
