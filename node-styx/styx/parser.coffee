@@ -15,7 +15,7 @@ StyxParser = module.exports = (callback) ->
             return unless message
             @vars.type = message.name
             message.decode.call @, ->
-                callback @vars
+                callback? @vars
                 @vars = {}
 
 util.inherits StyxParser, Dissolve
