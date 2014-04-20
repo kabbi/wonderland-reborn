@@ -26,6 +26,7 @@ startCli = (socket) ->
             output: process.stdout
 
     rl.on "line", (line) ->
+        winston.error "Data: #{(new Buffer line, 'utf-8').toString 'hex'}"
         return rl.prompt() unless line
 
         try
@@ -38,9 +39,13 @@ startCli = (socket) ->
 
     rl.on "close", ->
         socket.end()
+        if argv.server
+            server.close()
 
     socket.on "data", (msg) ->
         winston.verbose "<- #{JSON.stringify msg}"
+    socket.on "end", ->
+        rl.close()
 
     rl.setPrompt argv.prompt or "styx> "
     rl.prompt()

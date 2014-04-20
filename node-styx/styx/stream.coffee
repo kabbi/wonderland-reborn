@@ -1,29 +1,33 @@
 util = require "util"
 winston = require "winston"
-events = require "events"
+stream = require "stream"
 
 StyxEncoder = require "./encoder"
 StyxParser = require "./parser"
 
 StyxStream = module.exports = (@target) ->
     return new StyxStream() unless @ instanceof StyxStream
-    events.EventEmitter.call @
+    stream.Duplex.call @, objectMode: true
 
     @parser = new StyxParser (msg) =>
-        @emit "data", msg
+        @push msg
     @encoder = new StyxEncoder()
     target.pipe @parser
     @encoder.pipe target
 
-    @parser.on "end", ->
+    @on "finish", =>
         @encoder.end()
+    @parser.on "finish", =>
+        @encoder.end()
+        @push null
 
     return
 
-util.inherits StyxStream, events.EventEmitter
+util.inherits StyxStream, stream.Duplex
 
-StyxStream::write = (data) ->
-    @encoder.encode data
+StyxStream::_read = (size) ->
+    # do nothing, read is async
 
-StyxStream::end = ->
-    @encoder.end()
+StyxStream::_write = (chunk, encoding, callback) ->
+    @encoder.encode chunk
+    callback()
