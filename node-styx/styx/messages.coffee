@@ -89,7 +89,7 @@ module.exports =
     109:
         name: 'Rflush'
         decode: (finish) ->
-            finish()
+            @tap finish
         encode: (msg) ->
             @result()
     110:
@@ -100,9 +100,9 @@ module.exports =
             .uint16le("numberOfEntries")
             .tap ->
                 @loop("pathEntries", (end) ->
+                    if @vars.pathEntries.length is @vars.numberOfEntries
+                        return end(true)
                     @string16("path")
-                    if @vars.pathEntries.length is @vars.numberOfEntries - 1
-                        do end
                 ).tap ->
                     @vars.pathEntries = @vars.pathEntries.map (item) -> item.path
                     delete @vars.numberOfEntries
@@ -117,8 +117,19 @@ module.exports =
     111:
         name: 'Rwalk'
         decode: (finish) ->
-            finish()
+            @uint16le("numberOfEntries")
+            .loop("pathEntries", (end) ->
+                if @vars.pathEntries.length is @vars.numberOfEntries
+                    return end(true)
+                @qid("qid")
+            ).tap ->
+                @vars.pathEntries = @vars.pathEntries.map (item) -> item.qid
+                delete @vars.numberOfEntries
+                finish.call @
         encode: (msg) ->
+            @uint16le(msg.pathEntries.length)
+            for entry in msg.pathEntries
+                @qid entry
             @result()
     112:
         name: 'Topen'
@@ -223,7 +234,7 @@ module.exports =
     121:
         name: 'Rclunk'
         decode: (finish) ->
-            finish()
+            @tap finish
         encode: (msg) ->
             @result()
     122:
@@ -237,7 +248,7 @@ module.exports =
     123:
         name: 'Rremove'
         decode: (finish) ->
-            finish()
+            @tap finish
         encode: (msg) ->
             @result()
     124:
@@ -273,7 +284,7 @@ module.exports =
     127:
         name: 'Rwstat'
         decode: (finish) ->
-            finish()
+            @tap finish
         encode: (msg) ->
             @result()
 

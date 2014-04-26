@@ -3,7 +3,7 @@ module.exports = [
     encoded: new Buffer "1300000064ffff002000000600395032303030", "hex"
     decoded:
         type: "Tversion"
-        tag: 65535
+        tag: 0xFFFF
         messageSize: 8192
         protocol: "9P2000"
 ,
@@ -107,4 +107,44 @@ module.exports = [
         ownerName: "uss"
         groupName: "gii"
         lastModifierName: ""
+,
+    # TODO: rmsgs below are not realy good in terms of testing parser functionality.
+    # Consider improving with some random data
+
+    encoded: new Buffer "1300000065ffff002000000600395032303030", "hex"
+    decoded:
+        type: "Rversion"
+        tag: 0xFFFF
+        messageSize: 8192
+        protocol: "9P2000"
+,
+    encoded: new Buffer "1400000069000080000000000000000000000000", "hex"
+    decoded:
+        type: "Rattach"
+        tag: 0
+        qid:
+            type: 128
+            version: 0
+            path: 0
+,
+    encoded: new Buffer "090000006f01000000", "hex"
+    decoded:
+        type: "Rwalk"
+        tag: 1
+        pathEntries: []
+,
+    encoded: new Buffer "1800000071030080000000000000000000000000e81f0000", "hex"
+    decoded:
+        type: "Ropen"
+        tag: 3
+        qid:
+            type: 128
+            version: 0
+            path: 0
+        ioUnit: 8168
+,
+    encoded: new Buffer "07000000790700", "hex"
+    decoded:
+        type: "Rclunk"
+        tag: 7
 ]

@@ -26,7 +26,6 @@ startCli = (socket) ->
             output: process.stdout
 
     rl.on "line", (line) ->
-        winston.error "Data: #{(new Buffer line, 'utf-8').toString 'hex'}"
         return rl.prompt() unless line
 
         try
@@ -43,6 +42,8 @@ startCli = (socket) ->
             server.close()
 
     socket.on "data", (msg) ->
+        # Add a newline for better output
+        console.log ""
         winston.verbose "<- #{JSON.stringify msg}"
     socket.on "end", ->
         rl.close()
