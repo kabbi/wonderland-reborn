@@ -15,6 +15,8 @@ Things to do to make the better Wonderland
             - pack styx messages
             - unpack styx messages
             - some transport utils
+            - schema validation for messages
+                - use json-schema and tv4 for checks
         - tests
         - utils
             - styxchat
@@ -27,6 +29,7 @@ Things to do to make the better Wonderland
         - examples
             - some fs's to expose host resources
                 - netfs
+                - export (simple export host fs)
                 - windowfs or xfs (x server export)
             - pipefs
             - logfs

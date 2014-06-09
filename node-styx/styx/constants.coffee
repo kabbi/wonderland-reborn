@@ -9,6 +9,13 @@ exports.MODE_EXEC = 0x03
 exports.MODE_TRUNCATE = 0x10
 exports.MODE_REMOVE_ON_CLOSE = 0x40
 
+# FINDOUT What are these?
+exports.DMDIR = 2147483648 # 1 << 31
+exports.DMAPPEND = 1073741824 # 1 << 30
+exports.DMEXCL = 536870912 # 1 << 29
+exports.DMAUTH = 134217728 # 1 << 27
+exports.DMTMP = 67108864 # 1 << 26
+
 exports.QID_TYPE_FILE = 0x00;
 exports.QID_TYPE_TMP = 0x04;
 exports.QID_TYPE_AUTH = 0x08;
