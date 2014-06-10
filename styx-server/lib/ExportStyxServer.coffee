@@ -94,7 +94,7 @@ ExportStyxServer::validateMessage = (msg) ->
     unless @fidsMap[msg.fid]
         @handleError msg, styx.EBADFID
         return false
-    if msg.newFid and @fidsMap[msg.newFid]
+    if msg.newFid and msg.newFid isnt msg.fid and @fidsMap[msg.newFid]
         @handleError msg, styx.EINUSE
         return false
     if msg.type in ["Tread", "Twrite"] and not @fidsMap[msg.fid].fd
@@ -122,7 +122,7 @@ ExportStyxServer::handleStat = (msg) ->
         return @handleError msg, err unless stat
         answerMsg =
             type: "Rstat"
-        @styxStatFromStat answerMsg, stat
+        @styxStatFromStat answerMsg, stat, @fidsMap[msg.fid].path
         @answer msg, answerMsg
 
 ExportStyxServer::handleWalk = (msg) ->
@@ -132,12 +132,22 @@ ExportStyxServer::handleWalk = (msg) ->
         @answer msg, type: "Rwalk", pathEntries: []
         @cloneFid msg.fid, msg.newFid
         return
-    # Provide qids for every step
+
     steps = msg.pathEntries
+    # Do a bit of validation
+    if "." in steps
+        return @handleError msg, styx.EDOT
+    # Get absolute path for every step
     steps[-1] = @fidsMap[msg.fid].path
     for i in [0...steps.length]
         steps[i] = steps[i - 1] + "/" + steps[i]
     delete steps[-1]
+    # Do not allow to walk past export dir boundaries
+    for step in steps
+        relPath = pathUtils.relative @rootPath, step
+        relPath = relPath.split "/"
+        return @handleError msg, styx.ENOTFOUND if ".." in relPath
+    # Provide qids for every step
     async.map steps, ((path, callback) => @obtainQid path, callback), (err, qids) =>
         return @handleError msg, err if err
         [..., finalPath] = steps
