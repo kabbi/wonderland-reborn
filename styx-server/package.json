@@ -17,6 +17,7 @@
   },
   "dependencies": {
     "node-styx": "~0.0.1",
+    "styx-client": "~0.0.1",
     "rufus": "~0.5.6",
     "yargs": "~1.2.1",
     "async": "~0.7.0"

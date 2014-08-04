@@ -2,8 +2,6 @@ fs = require "fs"
 styx = require "node-styx"
 util = require "util"
 rufus = require "rufus"
-events = require "events"
-stream = require "stream"
 async = require "async"
 pathUtils = require "path"
 
@@ -44,8 +42,11 @@ ExportStyxServer::qidTypeByStat = (stat) ->
     if stat.isDirectory() then styx.QID_TYPE_DIR else styx.QID_TYPE_FILE
 
 ExportStyxServer::cloneFid = (fid, newFid) ->
-    @fidsMap[newFid] = @fidsMap[fid]
-    @fidsMap[newFid].fid = newFid
+    @fidsMap[newFid] =
+        fid: newFid
+        path: @fidsMap[fid].path
+        qid: @fidsMap[fid].qid
+    newFid
 
 ExportStyxServer::removeFid = (fid) ->
     delete @fidsMap[fid]

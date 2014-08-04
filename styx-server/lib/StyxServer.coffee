@@ -16,8 +16,8 @@ StyxServer = module.exports = (@stream, @config) ->
     @config = @config or {}
 
     # TODO: remove this
-    @stream.on "data", (data) ->
-        logger.debug "Received data dump: #{data.toString 'hex'}"
+    # @stream.on "data", (data) ->
+    #     logger.debug "Received data dump: #{data.toString 'hex'}"
 
     # Start a styx protocol
     @stream = new styx.StyxStream @stream
