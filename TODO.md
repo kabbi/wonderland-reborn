@@ -12,8 +12,8 @@ Things to do to make the better Wonderland
             - think of more
     - Styx message packing/unpacking lib
         - lib
-            - pack styx messages
-            - unpack styx messages
+            + pack styx messages
+            + unpack styx messages
             - some transport utils
             - schema validation for messages
                 - use json-schema and tv4 for checks
@@ -25,6 +25,9 @@ Things to do to make the better Wonderland
     - Styx server framework
         - lib
             - several ways to define styx server
+                + export host fs
+                + some siple struct-like definition
+                - consisting of several servers (supporting mounts and unions)
         - tests
         - examples
             - some fs's to expose host resources
@@ -50,16 +53,23 @@ Things to do to make the better Wonderland
             - graph plotters (?)
 
 - As for the main project parts, we can define DHT and Cheshire. Cheshire - is the main point of the whole Wonderland, and dht is used as it's transport.
-    - DHT:
+    - DHT: kadoh will be used for the base, modified to support nat overcoming, encryption and more tests for this features. See http://github.com/kabbi/kadoh
         - lib base
             - core kademlia thing
             - some cute optimizations
-            - additional rpc support (?)
+            - additional rpc support
+                - custom user messages
+                - more to come
+            - nat traversal
+            - encryption support
         - tests
             - simple internal per-feature tests
             - some complex thing that starts several servers and interacts somehow
             - some absolutely random tests, including stress-tests
         - utils
+            - debug gui
+                - nice network visualisation
+                - stored data parsing
             - command line client
             - speed test / benchmark
             - dhtfs styx server
