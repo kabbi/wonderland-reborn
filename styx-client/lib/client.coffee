@@ -20,10 +20,6 @@ StyxClient = module.exports = (@stream, @config) ->
     @config = @config or {}
     @config.userName ?= process.env.USER
 
-    # TODO: remove this
-    @stream.on "data", (data) ->
-        logger.debug "Received data dump: #{data.toString 'hex'}"
-
     # Start a styx protocol
     @stream = new styx.StyxStream @stream
     @stream.on "error", (err) ->
@@ -172,10 +168,7 @@ StyxClient::chdir = (path, callback) ->
 
 StyxClient::sendMessage = (msg, callback) ->
     msg.tag ?= @lastTag++
-
-    logger.debug "Sending #{JSON.stringify msg}"
-
-    @stream.write msg
+    
     @awaitingTags[msg.tag] = (answer) ->
         expectedAnswer = "R" + msg.type[1..]
         if answer.type is "Rerror"
@@ -187,6 +180,9 @@ StyxClient::sendMessage = (msg, callback) ->
         else
             logger.debug "Got #{JSON.stringify answer}"
             callback null, answer
+
+    logger.debug "Sending #{JSON.stringify msg}"
+    @stream.write msg
 
 StyxClient::handleMessage = (msg) ->
     @awaitingTags[msg.tag]? msg

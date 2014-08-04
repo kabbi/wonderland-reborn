@@ -1,0 +1,1 @@
+exports.StyxClient = require "./lib/client"
