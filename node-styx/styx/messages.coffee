@@ -221,7 +221,7 @@ module.exports =
             @uint32le("count")
             .tap finish
         encode: (msg) ->
-            @uint32le("count")
+            @uint32le(msg.count)
             .result()
     120:
         name: 'Tclunk'

@@ -147,4 +147,10 @@ module.exports = [
     decoded:
         type: "Rclunk"
         tag: 7
+,
+    encoded: new Buffer "0b0000007706002a000000", "hex"
+    decoded:
+        type: "Rwrite"
+        tag: 6
+        count: 42
 ]
