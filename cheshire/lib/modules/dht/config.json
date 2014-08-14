@@ -1,0 +1,29 @@
+{
+	"nodeConfig": {
+		"transport": "udp",
+		"reactor": {
+			"protocol": "jsonrpc2",
+			"transport": {
+				"host": "127.0.0.1",
+				"port": 13000,
+				"reconnect": true
+			}
+		}
+	},
+	"bootstrapConfig": {
+		"transport": "udp",
+		"reactor": {
+			"protocol": "jsonrpc2",
+			"transport": {
+				"host": "127.0.0.1",
+				"port": 15000,
+				"reconnect": true
+			}
+		}
+	},
+	"template": {
+		"nodeId": null,
+		"bootstrapNodes": null,
+		"routingTable": null
+	}
+}

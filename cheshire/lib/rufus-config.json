@@ -1,0 +1,38 @@
+{
+  "formatters": {
+    "simple": "[%logger] %message%n",
+    "details": "[%level] [%date] %logger: %message%n"
+  },
+  "handlers": {
+    "terminal": {
+      "class": "rufus/handlers/console",
+      "formatter": "simple",
+      "level": "VERBOSE",
+      "colorize": true
+    },
+    "logfile": {
+      "class": "rufus/handlers/file",
+      "file": "./logs/errors.log",
+      "level": "ERROR"
+    },
+    "void": {
+      "class": "rufus/handlers/null"
+    }
+  },
+  "loggers": {
+    "root": {
+      "handlers": ["terminal"],
+      "level": "ERROR",
+      "exitOnError": false
+    },
+    "cheshire": {
+      "level": "VERBOSE"
+    },
+    "modules": {
+      "level": "VERBOSE"
+    },
+    "node_modules.kadoh": {
+      "level": "VERBOSE"
+    }
+  }
+}
