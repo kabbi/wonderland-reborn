@@ -1,11 +1,17 @@
-server = require "styx-server"
-events = require "events"
-rufus  = require "rufus"
-kadoh  = require "kadoh"
-styx   = require "node-styx"
-util   = require "util"
-net    = require "net"
-fs     = require "fs"
+###
+name: styxprovider
+dependencies:
+    - styxroot
+    - dht
+###
+pathUtil = require "path"
+server   = require "styx-server"
+rufus    = require "rufus"
+kadoh    = require "kadoh"
+styx     = require "node-styx"
+util     = require "util"
+net      = require "net"
+fs       = require "fs"
 
 {util: {crypto}} = kadoh
 
@@ -13,33 +19,52 @@ logger = rufus.getLogger "modules.styxprovider"
 EXPORTS_FILE_PATH = "./data/exports.json"
 
 module.exports = StyxProvider = (@cheshire) ->
-    events.EventEmitter.call @
     @name = "styxprovider"
-    @cheshire.on "styxprovider.exported", =>
+    @cheshire.on "/styxprovider/exported", =>
         @saveExports()
     return
-util.inherits StyxProvider, events.EventEmitter
 
 StyxProvider::init = (prevInstance, callback) ->
-    callback = prevInstance unless callback
-    @cheshire.on "dht.ready", (dht) =>
-        @node = dht.node
-    @cheshire.on "styxroot.control-root.ready", (server) =>
+    @cheshire.on "/styxroot/control-root/ready", (server) =>
         @setupControlRoot server.rootFid.handlers
         @controlRoot = server
-    @cheshire.emit "styxprovider.ready", @
+
     @internalExports =
         export: @createExportServer
         proxy: @createProxyServer
         internal: @createControlRootServer
     @exportsMap = {}
-    callback null, @
+
+    # Publish onto dht
+    @cheshire.on "/styxprovider/exported", (e) =>
+        @cheshire.emit "/dht/node/info", (nodeId) =>
+            uid = crypto.digest.SHA1 "#{e.path}:#{e.spec}"
+            key = crypto.digest.SHA1 pathUtil.dirname e.path
+            value =
+                name: pathUtil.basename e.path
+                provider: nodeId
+                target: uid
+            value = JSON.stringify value
+            # Publish server itself
+            @cheshire.emit "/dht/put", key, value, (key, storedCount) =>
+                logger.debug "publishing exported server on '#{e.path}'
+                    to #{storedCount} peers in dht"
+            # Publish helper dummy folder-like structures
+            components = (e.path.split "/")[1...-1] # strip begin and end
+            currentPath = "/"
+            for component in components
+                key = crypto.digest.SHA1 currentPath
+                @cheshire.emit "/dht/put", key, dummy: true, name: component
+                logger.debug "dummy at #{currentPath} -> #{component}"
+                currentPath = pathUtil.join currentPath, component
 
     # Load exports
     process.nextTick =>
         exports = JSON.parse fs.readFileSync EXPORTS_FILE_PATH
         for own path, spec of exports
             @addExporterServer path, spec
+
+    @cheshire.emit "/styxprovider/ready"
 
 StyxProvider::destroy = (callback) ->
     callback null
@@ -70,7 +95,7 @@ StyxProvider::addExporterServer = (path, serverSpec) ->
     # tructor argument, etc
     logger.info "Adding server #{serverSpec} on #{path}"
     if serverSpec[0] is "/"
-        logger.warn "Sorry, don't currently support expternal or wonderland exports"
+        logger.warn "Sorry, don't currently support external or wonderland exports"
     else
         [module, args...] = serverSpec.split " "
         return logger.error "Don't know, how to create export", module unless @internalExports[module]
@@ -84,7 +109,7 @@ StyxProvider::addExporterServer = (path, serverSpec) ->
             spec: serverSpec
             server: styxServer
             exporter: exporter
-        @cheshire.emit "styxprovider.exported", @exportsMap[path]
+        @cheshire.emit "/styxprovider/exported", @exportsMap[path]
 
 StyxProvider::setupControlRoot = (handlers) ->
     logger.debug "adding exports interface to control root"

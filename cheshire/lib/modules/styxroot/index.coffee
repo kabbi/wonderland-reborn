@@ -1,23 +1,22 @@
+###
+name: styxroot
+###
 {
     UnionStyxServer,
     SimpleStyxServer,
+    FidBasedStyxServer,
     pipeUtils
 } = require "styx-server"
-events = require "events"
-rufus  = require "rufus"
-util   = require "util"
-net    = require "net"
+rufus   = require "rufus"
+util    = require "util"
+net     = require "net"
 
 config = require "./config"
 logger = rufus.getLogger "modules.styxroot"
 
 module.exports = StyxRoot = (@cheshire) ->
-    events.EventEmitter.call @
-    @name = "styxroot"
-    @on "connected", =>
-        @setupServer()
+    # Empty constructor
     return
-util.inherits StyxRoot, events.EventEmitter
 
 StyxRoot::setupServer = () ->
 
@@ -30,10 +29,9 @@ StyxRoot::setupServer = () ->
     [s1, s2] = pipeUtils.createPipe()
     @controlRoot = new SimpleStyxServer s2, handlers: handlers
     @server.addUnion "./cheshire", s1
-    @cheshire.emit "styxroot.control-root.ready", @controlRoot
+    @cheshire.emit "/styxroot/control-root/ready", @controlRoot
 
-StyxRoot::init = (prevInstance, callback) ->
-    callback = prevInstance unless callback
+StyxRoot::init = ->
     server = net.createServer (client) =>
         if @server
             logger.error "Cannot handle several clients"
@@ -41,7 +39,8 @@ StyxRoot::init = (prevInstance, callback) ->
             return
 
         logger.debug "client connected"
-        @cheshire.emit "styxroot.ready", @
+        @cheshire.emit "/styxroot/connected",
+            client.remoteAddress, client.remotePort
         
         client.on "end", =>
             logger.debug "client disconnected"
@@ -50,17 +49,16 @@ StyxRoot::init = (prevInstance, callback) ->
             logger.error "Some connection exception: #{error}"
 
         @server = new UnionStyxServer client
-        @emit "connected", @server
+        @server.on "walk", (path) =>
+            @cheshire.emit "/styxroot/walk", @server, path
+        @setupServer()
 
     server.listen config.styx.port, config.styx.host, =>
         logger.debug "listening on #{config.styx.host}:#{config.styx.port}"
- 
-    callback null, @
 
-StyxRoot::destroy = (callback) ->
+StyxRoot::destroy = ->
     if @server
         @server.stream.end()
         @server?.destroy()
         delete @server
-    @cheshire.emit "styxroot.finished", @
-    callback null
+    @cheshire.emit "/styxroot/finished"

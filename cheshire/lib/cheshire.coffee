@@ -15,7 +15,6 @@ module.exports = Cheshire = ->
         logger.info "Wheeeeeee! Welcome to the Wonderland!"
     @on "finished", =>
         logger.info "One does not simply stop Cheshire"
-    @modules = {}
     @startModules()
     @startCli() if yargs.argv.cli
     return
@@ -23,15 +22,9 @@ util.inherits Cheshire, events.EventEmitter
 
 Cheshire::startModules = ->
     logger.debug "starting modules"
-    fs.readdir "./lib/modules", (err, files) =>
-        return logger.error "Cannot start modules", err unless files
-        logger.debug "found module #{file}" for file in files
-
-        modules = (new (require "./modules/#{file}")(@) for file in files)
-        @modules[module.name] = module for module in modules
-        async.each modules, ((module, callback) ->
-            module.init callback
-        ), => @emit "init-finish"
+    Moduler = require "./modules/moduler"
+    @moduler = new Moduler @
+    @moduler.init()
 
 Cheshire::startCli = ->
     repl = require "repl"

@@ -16,12 +16,14 @@
   "dependencies": {
     "async": "^0.9.0",
     "bluebird": "^2.2.2",
+    "js-yaml": "^3.2.2",
     "kadoh": "kabbi/kadoh",
     "node-stringprep": "^0.5.2",
     "node-styx": "~0.0.1",
     "rufus": "kabbi/rufus",
     "styx-client": "~0.0.1",
     "styx-server": "~0.0.1",
+    "underscore": "^1.7.0",
     "yargs": "^1.3.1"
   },
   "author": "kabbi",
